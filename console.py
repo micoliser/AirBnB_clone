@@ -4,15 +4,23 @@
     for this project
 """
 import cmd
-from models.base_model import BaseModel
 from models import storage
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
 
 
 class HBNBCommand(cmd.Cmd):
     """ The command interpreter """
 
     prompt = "(hbnb) "
-    models = {"BaseModel": BaseModel}
+    models = {
+        "BaseModel": BaseModel,
+        "User": User,
+        "State": State,
+        "City": City
+    }
 
     def emptyline(self):
         """ Executes when the line is empty """
@@ -61,7 +69,7 @@ class HBNBCommand(cmd.Cmd):
 
         all_objs = storage.all()
         for obj_id, obj in all_objs.items():
-            if id == obj.id:
+            if id == obj.id and obj.__class__.__name__ == model:
                 print(obj)
                 return
         print("** no instance found **")
@@ -90,7 +98,7 @@ class HBNBCommand(cmd.Cmd):
 
         all_objs = storage.all()
         for obj_id, obj in all_objs.items():
-            if obj.id == id:
+            if id == obj.id and obj.__class__.__name__ == model:
                 del obj
                 del storage._FileStorage__objects[obj_id]
                 storage.save()
@@ -125,7 +133,7 @@ class HBNBCommand(cmd.Cmd):
         """
             Updates an instance based on class name and id by
             adding or updating attributes
-            Usage: update <model> <id> <attribute> <value>
+            Usage: update <model> <id> <attribute> "<value>"
         """
 
         if not line:
@@ -147,7 +155,7 @@ class HBNBCommand(cmd.Cmd):
         all_objs = storage.all()
         id_exist = False
         for obj_id, obj in all_objs.items():
-            if obj.id == id:
+            if id == obj.id and obj.__class__.__name__ == model:
                 id_exist = True
 
         if not id_exist:
@@ -160,15 +168,25 @@ class HBNBCommand(cmd.Cmd):
             print("** attribute name missing **")
             return
 
+        attr_vals = []
         try:
-            attr_val = args[3]
+            attr_vals.append(args[3])
         except IndexError:
             print("** value missing **")
             return
 
+        if attr_vals[0][-1] != '"':
+            i = 4
+            while i < len(args):
+                attr_vals.append(args[i])
+                if args[i][-1] == '"':
+                    break
+
+        attr_val = " ".join(attr_vals)
+
         for obj_id, obj in all_objs.items():
-            if obj.id == id:
-                setattr(obj, attr_name, attr_val)
+            if id == obj.id and obj.__class__.__name__ == model:
+                setattr(obj, attr_name, "".join(attr_val.split('"')))
                 obj.save()
                 break
 
