@@ -1,10 +1,25 @@
 import unittest
+import os
 from datetime import datetime
+from models import storage
 from models.base_model import BaseModel
 
 
 class BaseModelTest(unittest.TestCase):
     """ A class to test the BaseModel class """
+
+    def setUp(self):
+        """ calls before each test """
+
+        all_objs = storage.all().copy()
+
+        for key, val in all_objs.items():
+            del storage._FileStorage__objects[key]
+
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
 
     def test_base1(self):
         """ Test base model """
@@ -12,19 +27,20 @@ class BaseModelTest(unittest.TestCase):
         b1 = BaseModel()
 
         self.assertEqual(len(b1.id), 36)
-        self.assertTrue(type(b1.created_at) == datetime)
-        self.assertTrue(type(b1.updated_at) == datetime)
+        self.assertTrue(type(b1.created_at) is datetime)
+        self.assertTrue(type(b1.updated_at) is datetime)
         self.assertTrue(b1.created_at == b1.updated_at)
 
     def test_base2(self):
         """ Test base model """
 
         b1 = BaseModel()
-        time = datetime.now()
+        b1.name = "Model1"
+        b1.num = 72
         
         self.assertTrue(type(b1.id) is str)
-        self.assertTrue(type(b1.created_at) is type(time))
-        self.assertTrue(type(b1.updated_at) is type(time))
+        self.assertEqual(b1.name, "Model1")
+        self.assertEqual(b1.num, 72)
 
     def test_base_args(self):
         """ Test base model with args """
@@ -67,3 +83,65 @@ class BaseModelTest(unittest.TestCase):
                 )
 
         self.assertEqual(b1.__str__(), out_str)
+
+    def test_base_save(self):
+        """ test the save method of base """
+
+        b1 = BaseModel()
+        
+        # test that created_at and updated_at attributes are same
+        self.assertEqual(b1.created_at, b1.updated_at)
+
+        b1.save() # saves b1 to file. Now updated_at will be different
+        self.assertTrue(b1.created_at != b1.updated_at)
+        
+        fileName = "file.json"
+        # test that file.json exists
+        self.assertTrue(os.path.exists(fileName))
+        # test that file.json is a file
+        self.assertTrue(os.path.isfile(fileName))
+
+    def test_base_save_args(self):
+        """ test the save method with args """
+
+        b1 = BaseModel()
+
+        with self.assertRaises(TypeError):
+            b1.save(1, 2)
+
+    def test_base_to_dict1(self):
+        """ test the to_dict method """
+
+        b1 = BaseModel()
+        b1_dict = b1.to_dict()
+        dict_attrs = ["__class__", "updated_at", "created_at", "id"]
+
+        self.assertTrue(type(b1_dict) is dict)
+        for attr in dict_attrs:
+            self.assertTrue(attr in b1_dict)
+
+    def test_base_to_dict2(self):
+        """ test the to_dict method """
+
+        b1 = BaseModel()
+        b1.name = "MyModel1"
+        b1.num = 72
+        b1_dict = b1.to_dict()
+
+        # test that updated_at and created_at was converted to strings
+        self.assertTrue(type(b1_dict["updated_at"] is str))
+        self.assertTrue(type(b1_dict["created_at"] is str))
+
+        # test that __class__stores the correct class name
+        self.assertEqual(b1_dict["__class__"], "BaseModel")
+
+        self.assertEqual(b1.name, b1_dict["name"])
+        self.assertEqual(b1.num, b1_dict["num"])
+
+    def test_base_to_dict_args(self):
+        """ test the to_dict method with args """
+
+        b1 = BaseModel()
+
+        with self.assertRaises(TypeError):
+            b1.to_dict("h")
