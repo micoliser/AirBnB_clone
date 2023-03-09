@@ -1,9 +1,9 @@
 # AirBnB Clone
 ---------------
-## This project is a clone of the AirBnb web application
+### This project is a clone of the AirBnb web application
 
-# In this project
-## Command interpreter
+## In this project
+### Command interpreter
 ----------------------
 
 The command interpreter is a command line interpreter used to manage the objects of this project
@@ -18,7 +18,6 @@ $ ./console.py
 (hbnb) help
 
 Documented commands (type help <topic>):
-========================================
 EOF  help  quit
 
 (hbnb) 
@@ -31,7 +30,6 @@ $ echo "help" | ./console.py
 (hbnb)
 
 Documented commands (type help <topic>):
-========================================
 EOF  help  quit
 (hbnb) 
 $
@@ -42,7 +40,6 @@ $ cat test_help | ./console.py
 (hbnb)
 
 Documented commands (type help <topic>):
-========================================
 EOF  help  quit
 (hbnb) 
 $
