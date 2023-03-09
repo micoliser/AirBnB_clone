@@ -16,22 +16,41 @@ class UserTest(unittest.TestCase):
         for key, val in all_objs.items():
             del storage._FileStorage__objects[key]
 
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
+    def tearDown(self):
+        """ calls after each test """
+
+        all_objs = storage.all().copy()
+
+        for key, val in all_objs.items():
+            del storage._FileStorage__objects[key]
 
     def test_user1(self):
         """ Test user """
 
         u1 = User()
 
+        # test default types
         self.assertEqual(len(u1.id), 36)
         self.assertTrue(type(u1.created_at) is datetime)
         self.assertTrue(type(u1.updated_at) is datetime)
+        self.assertTrue(type(u1.email) is str)
+        self.assertTrue(type(u1.password) is str)
+        self.assertTrue(type(u1.first_name) is str)
+        self.assertTrue(type(u1.last_name) is str)
         self.assertTrue(u1.created_at == u1.updated_at)
 
     def test_user2(self):
+        """ Test user """
+
+        u1 = User()
+
+        # test default values
+        self.assertEqual(u1.email, "")
+        self.assertEqual(u1.password, "")
+        self.assertEqual(u1.first_name, "")
+        self.assertEqual(u1.last_name, "")
+
+    def test_user3(self):
         """ Test user model """
 
         u1 = User()
@@ -39,18 +58,17 @@ class UserTest(unittest.TestCase):
         u1.password = "7224"
         u1.first_name = "user1"
         u1.last_name = "user last"
-        
+
         self.assertTrue(type(u1.id) is str)
         self.assertEqual(u1.email, "user@mail.com")
         self.assertEqual(u1.password, "7224")
         self.assertEqual(u1.first_name, "user1")
         self.assertEqual(u1.last_name, "user last")
 
-
     def test_user_args(self):
         """ Test user model with args """
 
-        u1 = User(1, 3) # 1 and 3 will be ignored
+        u1 = User(1, 3)  # 1 and 3 will be ignored
 
         # Test that id exist and is not 1 or 3
         self.assertTrue(u1.id is not None)
@@ -97,18 +115,20 @@ class UserTest(unittest.TestCase):
         """ test the save method of user """
 
         u1 = User()
-        
+
         # test that created_at and updated_at attributes are same
         self.assertEqual(u1.created_at, u1.updated_at)
 
-        u1.save() # saves u1 to file. Now updated_at will be different
+        u1.save()  # saves u1 to file. Now updated_at will be different
         self.assertTrue(u1.created_at != u1.updated_at)
-        
+
         fileName = "file.json"
         # test that file.json exists
         self.assertTrue(os.path.exists(fileName))
         # test that file.json is a file
         self.assertTrue(os.path.isfile(fileName))
+
+        os.remove("file.json")
 
     def test_user_save_args(self):
         """ test the save method with args """
@@ -125,7 +145,11 @@ class UserTest(unittest.TestCase):
         u1.email = "user@mail.com"
         u1.first_name = "user1"
         u1_dict = u1.to_dict()
-        dict_attrs = ["__class__", "updated_at", "created_at", "id", "email", "first_name"]
+        dict_attrs = [
+            "__class__", "updated_at",
+            "created_at", "id",
+            "email", "first_name"
+        ]
 
         self.assertTrue(type(u1_dict) is dict)
         for attr in dict_attrs:

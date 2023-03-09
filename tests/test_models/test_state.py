@@ -16,34 +16,47 @@ class StateTest(unittest.TestCase):
         for key, val in all_objs.items():
             del storage._FileStorage__objects[key]
 
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
+    def tearDown(self):
+        """ calls after each test """
+
+        all_objs = storage.all().copy()
+
+        for key, val in all_objs.items():
+            del storage._FileStorage__objects[key]
 
     def test_state1(self):
         """ Test state """
 
         s1 = State()
 
+        # test default types
         self.assertEqual(len(s1.id), 36)
         self.assertTrue(type(s1.created_at) is datetime)
         self.assertTrue(type(s1.updated_at) is datetime)
+        self.assertTrue(type(s1.name) is str)
         self.assertTrue(s1.created_at == s1.updated_at)
 
     def test_state2(self):
+        """ test state """
+
+        s1 = State()
+
+        # test default values
+        self.assertEqual(s1.name, "")
+
+    def test_state3(self):
         """ Test state model """
 
         s1 = State()
         s1.name = "state1"
-        
+
         self.assertTrue(type(s1.id) is str)
         self.assertEqual(s1.name, "state1")
 
     def test_state_args(self):
         """ Test state model with args """
 
-        s1 = State(1, 3) # 1 and 3 will be ignored
+        s1 = State(1, 3)  # 1 and 3 will be ignored
 
         # Test that id exist and is not 1 or 3
         self.assertTrue(s1.id is not None)
@@ -88,18 +101,20 @@ class StateTest(unittest.TestCase):
         """ test the save method of state """
 
         s1 = State()
-        
+
         # test that created_at and updated_at attributes are same
         self.assertEqual(s1.created_at, s1.updated_at)
 
-        s1.save() # saves s1 to file. Now updated_at will be different
+        s1.save()  # saves s1 to file. Now updated_at will be different
         self.assertTrue(s1.created_at != s1.updated_at)
-        
+
         fileName = "file.json"
         # test that file.json exists
         self.assertTrue(os.path.exists(fileName))
         # test that file.json is a file
         self.assertTrue(os.path.isfile(fileName))
+
+        os.remove("file.json")
 
     def test_state_save_args(self):
         """ test the save method with args """

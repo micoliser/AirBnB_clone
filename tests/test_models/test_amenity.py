@@ -16,34 +16,47 @@ class AmenityTest(unittest.TestCase):
         for key, val in all_objs.items():
             del storage._FileStorage__objects[key]
 
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
+    def tearDown(self):
+        """ calls after each test """
+
+        all_objs = storage.all().copy()
+
+        for key, val in all_objs.items():
+            del storage._FileStorage__objects[key]
 
     def test_amenity1(self):
         """ Test amenity """
 
         a1 = Amenity()
 
+        # test default types
         self.assertEqual(len(a1.id), 36)
         self.assertTrue(type(a1.created_at) is datetime)
         self.assertTrue(type(a1.updated_at) is datetime)
+        self.assertTrue(type(a1.name) is str)
         self.assertTrue(a1.created_at == a1.updated_at)
 
     def test_amenity2(self):
+        """ Test amenity """
+
+        a1 = Amenity()
+
+        # test default values
+        self.assertEqual(a1.name, "")
+
+    def test_amenity3(self):
         """ Test amenity model """
 
         a1 = Amenity()
         a1.name = "amenity1"
-        
+
         self.assertTrue(type(a1.id) is str)
         self.assertEqual(a1.name, "amenity1")
 
     def test_amenity_args(self):
         """ Test amenity model with args """
 
-        a1 = Amenity(1, 3) # 1 and 3 will be ignored
+        a1 = Amenity(1, 3)  # 1 and 3 will be ignored
 
         # Test that id exist and is not 1 or 3
         self.assertTrue(a1.id is not None)
@@ -88,18 +101,20 @@ class AmenityTest(unittest.TestCase):
         """ test the save method of amenity """
 
         a1 = Amenity()
-        
+
         # test that created_at and updated_at attributes are same
         self.assertEqual(a1.created_at, a1.updated_at)
 
-        a1.save() # saves a1 to file. Now updated_at will be different
+        a1.save()  # saves a1 to file. Now updated_at will be different
         self.assertTrue(a1.created_at != a1.updated_at)
-        
+
         fileName = "file.json"
         # test that file.json exists
         self.assertTrue(os.path.exists(fileName))
         # test that file.json is a file
         self.assertTrue(os.path.isfile(fileName))
+
+        os.remove("file.json")
 
     def test_amenity_save_args(self):
         """ test the save method with args """

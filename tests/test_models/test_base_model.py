@@ -16,10 +16,13 @@ class BaseModelTest(unittest.TestCase):
         for key, val in all_objs.items():
             del storage._FileStorage__objects[key]
 
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
+    def tearDown(self):
+        """ calls after each test """
+
+        all_objs = storage.all().copy()
+
+        for key, val in all_objs.items():
+            del storage._FileStorage__objects[key]
 
     def test_base1(self):
         """ Test base model """
@@ -37,7 +40,7 @@ class BaseModelTest(unittest.TestCase):
         b1 = BaseModel()
         b1.name = "Model1"
         b1.num = 72
-        
+
         self.assertTrue(type(b1.id) is str)
         self.assertEqual(b1.name, "Model1")
         self.assertEqual(b1.num, 72)
@@ -45,7 +48,7 @@ class BaseModelTest(unittest.TestCase):
     def test_base_args(self):
         """ Test base model with args """
 
-        b1 = BaseModel(1, 3) # 1 and 3 will be ignored
+        b1 = BaseModel(1, 3)  # 1 and 3 will be ignored
 
         # Test that id exist and is not 1 or 3
         self.assertTrue(b1.id is not None)
@@ -88,18 +91,20 @@ class BaseModelTest(unittest.TestCase):
         """ test the save method of base """
 
         b1 = BaseModel()
-        
+
         # test that created_at and updated_at attributes are same
         self.assertEqual(b1.created_at, b1.updated_at)
 
-        b1.save() # saves b1 to file. Now updated_at will be different
+        b1.save()  # saves b1 to file. Now updated_at will be different
         self.assertTrue(b1.created_at != b1.updated_at)
-        
+
         fileName = "file.json"
         # test that file.json exists
         self.assertTrue(os.path.exists(fileName))
         # test that file.json is a file
         self.assertTrue(os.path.isfile(fileName))
+
+        os.remove("file.json")
 
     def test_base_save_args(self):
         """ test the save method with args """
