@@ -17,6 +17,19 @@ class FileStorageTest(unittest.TestCase):
     s_objs = s_test._FileStorage__objects
     s_file = s_test._FileStorage__file_path
 
+    @classmethod
+    def setUpClass(cls):
+        """ class before the tests """
+
+        objs = cls.s_test._FileStorage__objects.copy()
+        for key in objs.keys():
+            del cls.s_test._FileStorage__objects[key]
+
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
     def test_storage1(self):
         """ test file storage """
 
@@ -44,7 +57,6 @@ class FileStorageTest(unittest.TestCase):
         a1 = Amenity()
         p1 = Place()
         r1 = Review()
-
         objs = [b1, u1, s1, c1, a1, p1, r1]
 
         # test that len of __objects is 7 (1 key each for each model created)
@@ -136,3 +148,25 @@ class FileStorageTest(unittest.TestCase):
 
         with self.assertRaises(TypeError):
             self.s_test.save(12)
+
+    @classmethod
+    def tearDownClass(cls):
+        """ executes after all tests """
+        cls.s_test._FileStorage__objects = {}
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass
+
+    @classmethod
+    def tearDownClass(cls):
+        """ calls after the tests """
+
+        objs = cls.s_test._FileStorage__objects.copy()
+        for key in objs.keys():
+            del cls.s_test._FileStorage__objects[key]
+
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass

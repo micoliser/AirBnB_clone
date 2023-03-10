@@ -8,22 +8,6 @@ from models.base_model import BaseModel
 class BaseModelTest(unittest.TestCase):
     """ A class to test the BaseModel class """
 
-    def setUp(self):
-        """ calls before each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
-    def tearDown(self):
-        """ calls after each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
     def test_base1(self):
         """ Test base model """
 

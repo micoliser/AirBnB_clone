@@ -8,22 +8,6 @@ from models.state import State
 class StateTest(unittest.TestCase):
     """ A class to test the State class """
 
-    def setUp(self):
-        """ calls before each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
-    def tearDown(self):
-        """ calls after each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
     def test_state1(self):
         """ Test state """
 

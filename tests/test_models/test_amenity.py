@@ -8,22 +8,6 @@ from models.amenity import Amenity
 class AmenityTest(unittest.TestCase):
     """ A class to test the Amenity class """
 
-    def setUp(self):
-        """ calls before each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
-    def tearDown(self):
-        """ calls after each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
     def test_amenity1(self):
         """ Test amenity """
 

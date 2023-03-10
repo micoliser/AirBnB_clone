@@ -39,7 +39,8 @@ class HBNBCommand(cmd.Cmd):
         if not text:
             complete_list = self.models.keys()[:]
         else:
-            complete_list = [i for i in self.models.keys() if i.startswith(text)]
+            complete_list = [i for i in self.models.keys()
+                             if i.startswith(text)]
 
         return complete_list
 
@@ -393,6 +394,7 @@ class HBNBCommand(cmd.Cmd):
     complete_show = complete_create
     complete_all = complete_create
     complete_update = complete_create
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

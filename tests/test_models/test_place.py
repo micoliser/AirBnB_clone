@@ -8,27 +8,6 @@ from models.place import Place
 class PlaceTest(unittest.TestCase):
     """ A class to test the Place class """
 
-    def setUp(self):
-        """ calls before each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
-
-    def tearDown(self):
-        """ calls after each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
     def test_place1(self):
         """ Test place """
 
@@ -74,7 +53,7 @@ class PlaceTest(unittest.TestCase):
 
         p1 = Place()
         p1.city_id = "1223"
-        p1.user_id ="11234"
+        p1.user_id = "11234"
         p1.name = "place1"
         p1.description = "describing"
         p1.number_rooms = 12
@@ -184,7 +163,7 @@ class PlaceTest(unittest.TestCase):
 
         p1 = Place()
         p1.city_id = "1223"
-        p1.user_id ="11234"
+        p1.user_id = "11234"
         p1.name = "place1"
         p1.description = "describing"
         p1.number_rooms = 12

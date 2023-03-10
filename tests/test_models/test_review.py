@@ -8,27 +8,6 @@ from models.review import Review
 class ReviewTest(unittest.TestCase):
     """ A class to test the Review class """
 
-    def setUp(self):
-        """ calls before each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
-
-    def tearDown(self):
-        """ calls after each test """
-
-        all_objs = storage.all().copy()
-
-        for key, val in all_objs.items():
-            del storage._FileStorage__objects[key]
-
     def test_review1(self):
         """ Test review """
 
@@ -58,7 +37,7 @@ class ReviewTest(unittest.TestCase):
 
         r1 = Review()
         r1.place_id = "1223"
-        r1.user_id ="11234"
+        r1.user_id = "11234"
         r1.text = "review1"
 
         self.assertTrue(type(r1.id) is str)
@@ -152,7 +131,7 @@ class ReviewTest(unittest.TestCase):
 
         r1 = Review()
         r1.place_id = "1223"
-        r1.user_id ="11234"
+        r1.user_id = "11234"
         r1.text = "review1"
         r1_dict = r1.to_dict()
 
