@@ -997,16 +997,3 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()[:-1]
 
             self.assertEqual(value, "*** Unknown syntax: how()")
-
-    @classmethod
-    def tearDownClass(cls):
-        """ calls after the tests """
-
-        objs = storage._FileStorage__objects.copy()
-        for key in objs.keys():
-            del storage._FileStorage__objects[key]
-
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
