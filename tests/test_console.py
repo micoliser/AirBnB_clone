@@ -1,5 +1,6 @@
 import unittest
 import sys
+import os
 from unittest.mock import patch
 from io import StringIO
 from console import HBNBCommand
@@ -273,6 +274,14 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()[:-1]
             self.assertEqual(value, "** instance id missing **")
 
+    def test_model_show_wrong_model(self):
+        """ test model.show() with wrong class """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Stat.show()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "** class doesn't exist **")
+
     def test_destroy(self):
         """ test destroy command """
 
@@ -427,6 +436,14 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()[:-1]
             self.assertEqual(value, "** instance id missing **")
 
+    def test_model_destroy_wrong_model(self):
+        """ test model.destroy() with wrong class """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Mymodel.destroy()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "** class doesn't exist **")
+
     def test_all(self):
         """ test the all command """
 
@@ -567,6 +584,14 @@ class ConsoleTest(unittest.TestCase):
             HBNBCommand().onecmd("create Review")
             value = f.getvalue()[:-1]
             ConsoleTest.review_id = value
+
+    def test_model_all_wrong_model(self):
+        """ test model.all() with wrong class """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("NewModel.all()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "** class doesn't exist **")
 
     def test_update(self):
         """ test the update command """
@@ -824,3 +849,164 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()[:-1]
 
             self.assertEqual(value, "** instance id missing **")
+
+    def test_model_update_wrong_model(self):
+        """ test model.update() with wrong model """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("MyModel.update()"
+                                 .format(self.base_id))
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "** class doesn't exist **")
+
+    def test_model_update_dict1(self):
+        """ test the model.update() command with dict"""
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(
+                    "User.update(\"{}\", {{'first_name': 'John'}})"
+                    .format(self.user_id))
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "")
+
+            all_objs = storage.all()
+            obj_key = "User.{}".format(self.user_id)
+            obj = all_objs[obj_key]
+
+            self.assertTrue("first_name" in obj.to_dict())
+            self.assertEqual("John", obj.first_name)
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(
+                    "City.update(\"{}\", {{'city_id': '11213'}})"
+                    .format(self.city_id))
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "")
+
+            all_objs = storage.all()
+            obj_key = "City.{}".format(self.city_id)
+            obj = all_objs[obj_key]
+
+            self.assertTrue("city_id" in obj.to_dict())
+            self.assertEqual("11213", obj.city_id)
+
+    def test_model_update_dict2(self):
+        """ test the model.update() command to update an existing attr """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(
+                    "User.update(\"{}\", {{\"first_name\": 'Samuel Stones'}})"
+                    .format(self.user_id))
+            value = f.getvalue()[:-1]
+
+            all_objs = storage.all()
+            obj_key = "User.{}".format(self.user_id)
+            obj = all_objs[obj_key]
+
+            self.assertEqual("Samuel Stones", obj.first_name)
+
+    def test_model_update_dict3(self):
+        """ test model.update() with more attributes """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            command = "User.update(\"{}\", {{'first_name': ".format(
+                                                            self.user_id)
+            command2 = "\"John John\", \"last_name\": 'Emeka', 'age': 89})"
+            HBNBCommand().onecmd(command + command2)
+
+            all_objs = storage.all()
+            obj_key = "User.{}".format(self.user_id)
+            obj = all_objs[obj_key]
+
+            self.assertTrue("first_name" in obj.to_dict())
+            self.assertEqual(obj.first_name, "John John")
+
+            self.assertTrue("last_name" in obj.to_dict())
+            self.assertEqual(obj.last_name, "Emeka")
+
+            self.assertTrue("age" in obj.to_dict())
+            self.assertEqual(obj.age, 89)
+
+    def test_model_update_dict_wrong_id(self):
+        """ test the model.update() command with wrong id"""
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(
+                    "User.update(\"112345\", {'first_name': 'John'})")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "** no instance found **")
+
+    def test_model_update_dict_no_id(self):
+        """ test the model.update() command with no id"""
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd(
+                    "User.update({'first_name': 'John'})")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "** instance id missing **")
+
+    def test_model_update_dict_wrong_model(self):
+        """ test model.update() with wrong model """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("MyModel.update()"
+                                 .format(self.base_id))
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "** class doesn't exist **")
+
+    def test_invalid_args(self):
+        """ test some invalid args """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("hello Model")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: hello Model")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Model.create()")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: Model.create()")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Model.hide()")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: Model.hide()")
+
+    def test_invalid_args2(self):
+        """ test some invalid args """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Model")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: Model")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("User.update(")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: User.update(")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("how()")
+            value = f.getvalue()[:-1]
+
+            self.assertEqual(value, "*** Unknown syntax: how()")
+
+    @classmethod
+    def tearDownClass(cls):
+        """ calls after the tests """
+
+        objs = storage._FileStorage__objects.copy()
+        for key in objs.keys():
+            del storage._FileStorage__objects[key]
+
+        try:
+            os.remove("file.json")
+        except FileNotFoundError:
+            pass

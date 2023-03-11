@@ -151,15 +151,6 @@ class FileStorageTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """ executes after all tests """
-        cls.s_test._FileStorage__objects = {}
-        try:
-            os.remove("file.json")
-        except FileNotFoundError:
-            pass
-
-    @classmethod
-    def tearDownClass(cls):
         """ calls after the tests """
 
         objs = cls.s_test._FileStorage__objects.copy()
