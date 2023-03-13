@@ -142,6 +142,61 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()
             self.assertEqual(value, "** class name missing **\n")
 
+    def test_model_count(self):
+        """ test the model.count() command """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("State.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "1")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("User.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "2")
+
+        # create new models
+        for i in range(3):
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd("create User")
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd("create Amenity")
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd("create City")
+        for i in range(10):
+            with patch("sys.stdout", new=StringIO()) as f:
+                HBNBCommand().onecmd("create Review")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("User.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "5")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Review.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "11")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Amenity.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "4")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("Place.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "1")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("City.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "4")
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("BaseModel.count()")
+            value = f.getvalue()[:-1]
+            self.assertEqual(value, "2")
+
     def test_show(self):
         """ test the show command """
 
@@ -955,6 +1010,15 @@ class ConsoleTest(unittest.TestCase):
             value = f.getvalue()[:-1]
 
             self.assertEqual(value, "** class doesn't exist **")
+
+    def test_quit(self):
+        """ test the quit command """
+
+        with patch("sys.stdout", new=StringIO()) as f:
+            HBNBCommand().onecmd("quit")
+            value = f.getvalue()
+
+            self.assertEqual(value, "")
 
     def test_invalid_args(self):
         """ test some invalid args """
