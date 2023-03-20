@@ -29,23 +29,24 @@ ul {
 	align-items: center;
 }
 
-.locations {
+.filters .locations {
 	border-right: 1px solid #DDDDDD;
 }
 
-.locations, .amenities {
+.filters .locations, .filters .amenities {
 	height: 100%;
 	width: 25%;
 	padding-left: 5%;
 	position: relative;
+	margin-top: 0;
 }
 
-.locations h3, .amenities h3 {
+.filters h3 {
 	font-weight: 600;
 	margin-bottom: 0;
 }
 
-.locations h4, .amenities h4 {
+.filters h4 {
 	font-weight: 400;
 	font-size: 14px;
 	margin: 0;
